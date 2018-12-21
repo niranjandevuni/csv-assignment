@@ -1,30 +1,16 @@
 package com.prokarma.csv.beans;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement(name="employee") 
 public class Employee {
 	
-	
 	private int empId;
-	@XmlElement(name="prefix")
 	private String prefix;
-	@XmlElement(name="firstName")
 	private String firstName;
-	@XmlElement(name="lastName")
 	private String lastName;
-	@XmlElement(name="middleName")
 	private String middleName; // optional
-	@XmlElement(name="salary")
 	private double salary;
-	@XmlElement(name="gender")
 	private String gender;
-	@XmlElement(name="Street")
 	private String Street; // optional
-	@XmlElement(name="city")
 	private String city;  // optional
-	@XmlElement(name="active")
 	private boolean active; 
 
 	public Employee() {
