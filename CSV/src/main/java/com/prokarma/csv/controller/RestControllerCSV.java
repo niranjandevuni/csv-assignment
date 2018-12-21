@@ -12,12 +12,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.prokarma.csv.beans.Employee;
-import com.prokarma.csv.service.EmployeeServiceImpl;
+import com.prokarma.csv.service.EmployeeService;
 
 @Component
 @Path("/csv")
@@ -35,12 +34,12 @@ public class RestControllerCSV implements EmployeeMainInterface {
 	private String filePath;
 
 	@Inject
-	private EmployeeServiceImpl employeeServiceImpl;
+	private EmployeeService employeeService;
 
 	@Override
 	public ResponseEntity<List<Employee>> getAllEmployees() {
 		try {
-			List<Employee> employees = employeeServiceImpl.getAllEmpoyees();
+			List<Employee> employees = employeeService.getAllEmpoyees();
 			if (employees.isEmpty()) {
 				return new ResponseEntity(HttpStatus.NO_CONTENT);
 			}
@@ -68,7 +67,7 @@ public class RestControllerCSV implements EmployeeMainInterface {
 				return new ResponseEntity(HttpStatus.NO_CONTENT);
 			}
 			
-			employeeServiceImpl.saveCsvEmployeeData(employees);
+			employeeService.saveCsvEmployeeData(employees);
 			
 			if (file.delete()) {
 				log.info(file.getName() + " is deleted!");

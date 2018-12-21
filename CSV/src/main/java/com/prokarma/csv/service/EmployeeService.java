@@ -1,10 +1,11 @@
-package com.prokarma.csv.dao;
+package com.prokarma.csv.service;
 
 import java.util.List;
 
 import com.prokarma.csv.beans.Employee;
 
-public interface EmployeeDAO {
+public interface EmployeeService {
 	public List<Employee> getAllEmpoyees();
+
 	public int saveCsvEmployeeData(List<Employee> employees);
 }
