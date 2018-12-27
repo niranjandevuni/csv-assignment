@@ -4,16 +4,19 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.prokarma.csv.beans.Employee;
 
 @Component
 public class ReadCSV {
-
+	private final static Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 	private static final int EMP_ID = 0;
 	private static final int PREFIX = 1;
 	private static final int FIRST_NAME = 2;
@@ -26,15 +29,12 @@ public class ReadCSV {
 	private static final int ACTIVE = 9;
 
 	public List<Employee> readingCSVData(String path) {
-		BufferedReader fileReader = null;
-
 		File file = new File(path);
-		List<Employee> employees = null;
-
 		try {
-			
-			employees = new ArrayList<Employee>();
-			if (file.exists()) {
+		if (file.exists()) {
+				List<Employee> employees = null;
+				BufferedReader fileReader = null;
+				employees = new ArrayList<Employee>();
 
 				String line = "";
 
@@ -61,25 +61,13 @@ public class ReadCSV {
 						employees.add(employee);
 					}
 				}
-			}
-			return employees;
-
-		} catch (Exception e) {
-			System.out.println("Reading CSV Error!");
-			e.printStackTrace();
-		} finally {
-			try {
 				fileReader.close();
-			} catch (IOException e) {
-				System.out.println("Closing fileReader Error!");
-				e.printStackTrace();
+				return employees;
 			}
+		}
+		catch (Exception e) {
+			log.error("Reading CSV Error!"+e.getMessage());
 		}
 		return null;
 	}
-
-	/*
-	 * public static void main(String[] args) {
-	 * readingCSVData("D:\\sai\\test\\Employee.csv"); }
-	 */
 }

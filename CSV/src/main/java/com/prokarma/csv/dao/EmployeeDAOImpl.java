@@ -30,16 +30,18 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 	
 	@Override
 	public int saveCsvEmployeeData(List<Employee> employees, String filePath) {
-		try {
+//		try {
+			File file = new File(filePath);
+			if (file.exists()) {
 			if (!employees.isEmpty() && employees.size() > 0 && filePath.length()>0) {
 				
-				String sql = "insert into employee (empid,prefix,firstName,lastName,middleName,salary,gender,street,city,active)"
-						+ "values(:empid,:prefix,:firstName,:lastName,:middleName,:salary,:gender,:street,:city,:active)";
+				String sql = "insert into employee(empid,prefix,firstName,lastName,middleName,salary,gender,street,city,active)"
+						+ "values(:empId,:prefix,:firstName,:lastName,:middleName,:salary,:gender,:street,:city,:active)";
 				
 				List<Map<String, Object>> batchValues = new ArrayList<>(employees.size());
  
 				for (Employee employee : employees) {
-				    batchValues.add(new MapSqlParameterSource("empid", employee.getEmpId())
+				    batchValues.add(new MapSqlParameterSource("empId", employee.getEmpId())
 				                    .addValue("prefix", employee.getPrefix())
 				                    .addValue("firstName", employee.getFirstName())
 				                    .addValue("lastName", employee.getLastName())
@@ -55,7 +57,6 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 					int[] updateCounts = jdbcTemplate.batchUpdate(sql,batchValues.toArray(new Map[employees.size()]));	
 					log.info(" saved data in DB "+updateCounts);
 				
-				File file = new File(filePath);
 				if (file.delete()) {
 					log.info(file.getName() + " is deleted!");
 				} else {
@@ -63,9 +64,10 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 				}
 				return 1;
 			}
-		} catch (Exception e) {
-			log.error("error ==>" + e.getMessage());
-		}
+			}
+//		} catch (Exception e) {
+//			log.error("error ==>" + e.getMessage());
+//		}
 		return 0;
 	}
 

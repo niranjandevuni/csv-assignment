@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,12 +49,11 @@ public class RestControllerCSV {
 
 	}
 
-//	 @Scheduled(fixedRate = 10000)
+	@Scheduled(fixedRate = 10000)
 	@GetMapping("/readCsv")
 	public List<Employee> readCsvData() {
-		    List<Employee> employees = readCSV.readingCSVData(filePath);
-			employeeService.saveCsvEmployeeData(employees,filePath);
-
+		List<Employee> employees = readCSV.readingCSVData(filePath);
+		employeeService.saveCsvEmployeeData(employees, filePath);
 		return employees;
 	}
 

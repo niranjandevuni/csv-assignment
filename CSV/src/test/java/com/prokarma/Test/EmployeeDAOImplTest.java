@@ -66,11 +66,11 @@ public class EmployeeDAOImplTest {
 	
 	@Test
 	public void saveCsvEmployeeDataException(){
-		int[]  returnValue = {1,2,3};
 		
+		int[]  returnValue = {1,2,3};
 		List<Map<String, Object>> batchValues = new ArrayList<>(employees.size());
 		when(jdbcTemplate.batchUpdate(anyString(), (Map<String, Object>[])any())).thenThrow(NullPointerException.class);
-		int result = employeeDAOImpl.saveCsvEmployeeData(null,null);
+		int result = employeeDAOImpl.saveCsvEmployeeData(null,filePath);
 		assertEquals(0, result);
 	}
 	

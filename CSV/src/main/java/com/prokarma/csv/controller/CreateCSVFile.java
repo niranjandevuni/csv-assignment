@@ -18,38 +18,43 @@ public class CreateCSVFile {
 	private final static Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 	private static final String CSV_HEADER = "Emp ID,Prefix,First Name,Last Name,Middle Name,Salary,Gender,Street,city,Active";
 
-	public boolean createCSVFile(String path,List<Employee> Employees) {
+	public boolean createCSVFile(String path,List<Employee> employees) {
+		
 		FileWriter fileWriter = null;
+		
 		try {
+			if(employees.size()>0) {
 			fileWriter = new FileWriter(path);
  
 			fileWriter.append(CSV_HEADER);
 			fileWriter.append('\n');
-			for (Employee Employee : Employees) {
-				fileWriter.append(String.valueOf(Employee.getEmpId()));
+			for (Employee employee : employees) {
+				fileWriter.append(String.valueOf(employee.getEmpId()));
 				fileWriter.append(',');
-				fileWriter.append(Employee.getPrefix());
+				fileWriter.append(employee.getPrefix());
 				fileWriter.append(',');
-				fileWriter.append(Employee.getFirstName());
+				fileWriter.append(employee.getFirstName());
 				fileWriter.append(',');
-				fileWriter.append(Employee.getLastName());
+				fileWriter.append(employee.getLastName());
 				fileWriter.append(',');
-				fileWriter.append(Employee.getMiddleName());
+				fileWriter.append(employee.getMiddleName());
 				fileWriter.append(',');
-				fileWriter.append(String.valueOf(Employee.getSalary()));
+				fileWriter.append(String.valueOf(employee.getSalary()));
 				fileWriter.append(',');
-				fileWriter.append(Employee.getGender());
+				fileWriter.append(employee.getGender());
 				fileWriter.append(',');
-				fileWriter.append(Employee.getStreet());
+				fileWriter.append(employee.getStreet());
 				fileWriter.append(',');
-				fileWriter.append(Employee.getCity());
+				fileWriter.append(employee.getCity());
 				fileWriter.append(',');
-				fileWriter.append(String.valueOf(Employee.getActive()));
+				fileWriter.append(String.valueOf(employee.getActive()));
 				fileWriter.append('\n');
 			}
  
 			log.info("Write CSV successfully!");
 			return true;
+			}
+			return false;
 		} catch (Exception e) {
 			log.error("Writing CSV error!");
 			e.printStackTrace();
