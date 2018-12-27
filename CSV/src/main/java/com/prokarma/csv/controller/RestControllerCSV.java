@@ -1,26 +1,23 @@
 package com.prokarma.csv.controller;
 
-import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.ws.rs.Path;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.prokarma.csv.beans.Employee;
 import com.prokarma.csv.service.EmployeeService;
 
-@Component
-@Path("/csv")
-public class RestControllerCSV implements EmployeeMainInterface {
+@RestController
+public class RestControllerCSV {
 
 	private final static Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -36,45 +33,28 @@ public class RestControllerCSV implements EmployeeMainInterface {
 	@Inject
 	private EmployeeService employeeService;
 
-	@Override
-	public ResponseEntity<List<Employee>> getAllEmployees() {
-		try {
-			List<Employee> employees = employeeService.getAllEmpoyees();
-			if (employees.isEmpty()) {
-				return new ResponseEntity(HttpStatus.NO_CONTENT);
-			}
-			return new ResponseEntity<List<Employee>>(employees, HttpStatus.OK);
-		} catch (Exception e) {
-			log.error("error ==>" + e.getMessage());
+	@GetMapping("/all")
+	public List<Employee> allEmployees() {
+		return employeeService.getAllEmpoyees();
+	}
+
+	@PostMapping("/create")
+	public String createCSVFile(@RequestBody List<Employee> employees) {
+		if (createCSVFile.createCSVFile(filePath, employees)) {
+			return "Success in Creating CSV file";
+		} else {
+			return "Failed in Creating CSV file ";
 		}
-		return new ResponseEntity<List<Employee>>(HttpStatus.INTERNAL_SERVER_ERROR);
+
 	}
 
-	@Override
-	public ResponseEntity createCSVFile(@RequestBody List<Employee> employees) {
-		createCSVFile.createCSVFile(filePath, employees);
-		return new ResponseEntity(HttpStatus.OK);
+//	 @Scheduled(fixedRate = 10000)
+	@GetMapping("/readCsv")
+	public List<Employee> readCsvData() {
+		    List<Employee> employees = readCSV.readingCSVData(filePath);
+			employeeService.saveCsvEmployeeData(employees,filePath);
+
+		return employees;
 	}
 
-	// @Scheduled(fixedRate = 10000)
-	public ResponseEntity<List<Employee>> readCsvData() {
-		List<Employee> employees = null;
-		File file = new File(filePath);
-
-		if (file.exists()) {
-			employees = readCSV.readingCSVData(filePath);
-			if (employees.isEmpty()) {
-				return new ResponseEntity(HttpStatus.NO_CONTENT);
-			}
-			
-			employeeService.saveCsvEmployeeData(employees);
-			
-			if (file.delete()) {
-				log.info(file.getName() + " is deleted!");
-			} else {
-				log.info("Delete operation is failed.");
-			}
-		}
-		return new ResponseEntity<List<Employee>>(employees, HttpStatus.OK);
-	}
 }

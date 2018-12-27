@@ -1,6 +1,7 @@
 package com.prokarma.csv.controller;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.prokarma.csv.beans.Employee;
+
 @Component
 public class ReadCSV {
 
@@ -22,39 +24,44 @@ public class ReadCSV {
 	private static final int STREET = 7;
 	private static final int CITY = 8;
 	private static final int ACTIVE = 9;
-	
+
 	public List<Employee> readingCSVData(String path) {
-			BufferedReader fileReader = null;
+		BufferedReader fileReader = null;
+
+		File file = new File(path);
+		List<Employee> employees = null;
 
 		try {
-			List<Employee> employees = new ArrayList<Employee>();
-			String line = "";
 			
-			fileReader = new BufferedReader(new FileReader(path));
+			employees = new ArrayList<Employee>();
+			if (file.exists()) {
 
-			// Read CSV header
-			fileReader.readLine();
+				String line = "";
 
-			// Read customer data line by line
-			while ((line = fileReader.readLine()) != null) {
-				String[] tokens = line.split(",");
-				if (tokens.length > 0) {
-					Employee employee = new Employee(Integer.parseInt(tokens[EMP_ID]), tokens[PREFIX],
-							tokens[FIRST_NAME], tokens[LAST_NAME],
-							(!tokens[MIDDLE_NAME].isEmpty() && tokens[MIDDLE_NAME] != null) ? tokens[MIDDLE_NAME] : "",
-							(!tokens[SALARY].isEmpty() && tokens[SALARY] != null) ? Double.parseDouble(tokens[SALARY])
-									: Double.parseDouble(""),
-							(!tokens[GENDER].isEmpty() && tokens[GENDER] != null) ? tokens[GENDER] : "",
-							(!tokens[STREET].isEmpty() && tokens[STREET] != null) ? tokens[STREET] : "", tokens[CITY],
-							Boolean.parseBoolean(tokens[ACTIVE]));
+				fileReader = new BufferedReader(new FileReader(path));
 
-					employees.add(employee);
+				// Read CSV header
+				fileReader.readLine();
+
+				// Read customer data line by line
+				while ((line = fileReader.readLine()) != null) {
+					String[] tokens = line.split(",");
+					if (tokens.length > 0) {
+						Employee employee = new Employee(Integer.parseInt(tokens[EMP_ID]), tokens[PREFIX],
+								tokens[FIRST_NAME], tokens[LAST_NAME],
+								(!tokens[MIDDLE_NAME].isEmpty() && tokens[MIDDLE_NAME] != null) ? tokens[MIDDLE_NAME]
+										: "",
+								(!tokens[SALARY].isEmpty() && tokens[SALARY] != null)
+										? Double.parseDouble(tokens[SALARY])
+										: Double.parseDouble(""),
+								(!tokens[GENDER].isEmpty() && tokens[GENDER] != null) ? tokens[GENDER] : "",
+								(!tokens[STREET].isEmpty() && tokens[STREET] != null) ? tokens[STREET] : "",
+								tokens[CITY], Boolean.parseBoolean(tokens[ACTIVE]));
+
+						employees.add(employee);
+					}
 				}
 			}
-
-			/*for (Employee customer : employees) {
-				System.out.println(customer);
-			}*/
 			return employees;
 
 		} catch (Exception e) {
@@ -69,10 +76,10 @@ public class ReadCSV {
 			}
 		}
 		return null;
-}
+	}
 
-
-	/*public static void main(String[] args) {
-		readingCSVData("D:\\sai\\test\\Employee.csv");
-	}*/
+	/*
+	 * public static void main(String[] args) {
+	 * readingCSVData("D:\\sai\\test\\Employee.csv"); }
+	 */
 }

@@ -1,16 +1,17 @@
 package com.prokarma.csv.dao;
 
+import java.io.File;
 import java.lang.invoke.MethodHandles;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.prokarma.csv.beans.Employee;
@@ -20,43 +21,52 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 	private final static Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	@Inject
-	JdbcTemplate jdbcTemplate;
+	NamedParameterJdbcTemplate jdbcTemplate;
 
+	@SuppressWarnings("unchecked")
 	public List<Employee> getAllEmpoyees() {
-		log.info("testing ==>");
 		return jdbcTemplate.query("select * from employee", new EmpRowMapper());
 	}
-
+	
 	@Override
-	public int saveCsvEmployeeData(List<Employee> employees) {
+	public int saveCsvEmployeeData(List<Employee> employees, String filePath) {
 		try {
-			String sql = "insert into employee (empid,firstName,lastName,middleName,salary,gender,Street,city,active)"
-					+ "values(?,?,?,?,?,?,?,?,?)";
-			jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
-
-				@Override
-				public void setValues(PreparedStatement ps, int i) throws SQLException {
-					Employee employee = employees.get(i);
-					ps.setInt(1, employee.getEmpId());
-					ps.setString(2, employee.getFirstName());
-					ps.setString(3, employee.getLastName());
-					ps.setString(4, employee.getMiddleName());
-					ps.setDouble(5, employee.getSalary());
-					ps.setString(6, employee.getGender());
-					ps.setString(7, employee.getStreet());
-					ps.setString(8, employee.getCity());
-					ps.setBoolean(9, employee.getActive());
+			if (!employees.isEmpty() && employees.size() > 0 && filePath.length()>0) {
+				
+				String sql = "insert into employee (empid,prefix,firstName,lastName,middleName,salary,gender,street,city,active)"
+						+ "values(:empid,:prefix,:firstName,:lastName,:middleName,:salary,:gender,:street,:city,:active)";
+				
+				List<Map<String, Object>> batchValues = new ArrayList<>(employees.size());
+ 
+				for (Employee employee : employees) {
+				    batchValues.add(new MapSqlParameterSource("empid", employee.getEmpId())
+				                    .addValue("prefix", employee.getPrefix())
+				                    .addValue("firstName", employee.getFirstName())
+				                    .addValue("lastName", employee.getLastName())
+				                    .addValue("middleName", employee.getMiddleName())
+				                    .addValue("salary", employee.getSalary())
+				                    .addValue("gender", employee.getGender())
+				                    .addValue("street", employee.getStreet())
+				                    .addValue("city", employee.getCity())
+				                    .addValue("active", employee.getActive())
+				                    .getValues());
 				}
-
-				@Override
-				public int getBatchSize() {
-					return employees.size();
+			
+					int[] updateCounts = jdbcTemplate.batchUpdate(sql,batchValues.toArray(new Map[employees.size()]));	
+					log.info(" saved data in DB "+updateCounts);
+				
+				File file = new File(filePath);
+				if (file.delete()) {
+					log.info(file.getName() + " is deleted!");
+				} else {
+					log.info("Delete operation is failed.");
 				}
-			});
-			return 1;
+				return 1;
+			}
 		} catch (Exception e) {
 			log.error("error ==>" + e.getMessage());
 		}
 		return 0;
 	}
+
 }

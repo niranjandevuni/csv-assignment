@@ -24,8 +24,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public int saveCsvEmployeeData(List<Employee> employees) {
-		return employeeDAO.saveCsvEmployeeData(employees);
+	public int saveCsvEmployeeData(List<Employee> employees, String filePath) {
+		return employeeDAO.saveCsvEmployeeData(employees,filePath);
 	}
 
 }
